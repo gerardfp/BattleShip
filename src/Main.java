@@ -12,7 +12,8 @@ class BattleShip {
     int maxShoots = 32;
 
 
-    int[][] shipsGrid = new int[h][w];
+    // Game state
+    int[][] shipsGrid = new int[h][w];  // -1=No-ship    or   sizesIndex
     boolean[][] shootsGrid = new boolean[h][w];
     int[] damages = new int[sizes.length];
     int totalSize, totalDamage, totalShoots;
@@ -111,14 +112,12 @@ class BattleShip {
             for (int j = 0; j < w; j++) {
                 if (!shootsGrid[i][j]) {
                     System.out.print(" · ");
+                } else if (shipsGrid[i][j] == -1) {
+                    System.out.print("\033[1;94m ~ \033[0m");
+                } else if (damages[shipsGrid[i][j]] == sizes[shipsGrid[i][j]]) {
+                    System.out.print("\033[1;91m # \033[0m");
                 } else {
-                    if (shipsGrid[i][j] == -1) {
-                        System.out.print("\033[1;94m ~ \033[0m");
-                    } else if (damages[shipsGrid[i][j]] == sizes[shipsGrid[i][j]]) {
-                        System.out.print("\033[1;91m # \033[0m");
-                    } else {
-                        System.out.print("\033[31m * \033[0m");
-                    }
+                    System.out.print("\033[31m * \033[0m");
                 }
             }
             System.out.println();
@@ -152,10 +151,8 @@ class BattleShip {
                 row--;
                 col--;
 
-                if (row >= 0 && row < h && col >= 0 && col < w) {
-                    if (!shootsGrid[row][col]) {
-                        break;
-                    }
+                if (row >= 0 && row < h && col >= 0 && col < w && !shootsGrid[row][col]) {
+                    break;
                 }
             }
             System.out.println("\033[1;93m Invalid shoot \033[0m");
