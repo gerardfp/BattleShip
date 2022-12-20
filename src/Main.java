@@ -27,7 +27,7 @@ class BattleShip {
             printShootsGrid();
             printShoots();
             if (totalSize == totalDamage) {
-                System.out.println("\033[1;92m YOU WIN!!!!!!! \033[0m");
+                System.out.println("\033[1;92m YOU WIN!!!!! \033[0m");
                 break;
             } else if (totalShoots == maxShoots) {
                 System.out.println("\033[1;92m YOU LOOSE :( \033[0m");
