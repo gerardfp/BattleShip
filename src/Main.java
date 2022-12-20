@@ -8,12 +8,12 @@ class BattleShip {
 
     // Game config
     int w = 10, h = 10;
-    int[] sizes = {5, 4, 3, 3, 2};
+    int[] sizes = {5, 4, 3, 3, 2};  // index=shipNum
     int maxShoots = 32;
 
 
     // Game state
-    int[][] shipsGrid = new int[h][w];  // -1=No-ship    or   sizesIndex
+    int[][] shipsGrid = new int[h][w];  // -1=No-ship    or   shipNum
     boolean[][] shootsGrid = new boolean[h][w];
     int[] damages = new int[sizes.length];
     int totalSize, totalDamage, totalShoots;
@@ -49,34 +49,29 @@ class BattleShip {
     }
 
     void arrangeShips() {
-        int arranged = 0;
+        for (int shipNum = 0; shipNum < sizes.length; shipNum++) {
+            arrangeShip:
+            for (; ; ) {
+                boolean horizontal = random.nextBoolean();
+                int colSpan = horizontal ? sizes[shipNum] : 1;
+                int rowSpan = !horizontal ? sizes[shipNum] : 1;
+                int rowStart = random.nextInt(h - rowSpan);
+                int colStart = random.nextInt(w - colSpan);
 
-        while (arranged != sizes.length) {
-            for (int shipNum = 0; shipNum < sizes.length; shipNum++) {
-                arrangeShip:
-                for (; ; ) {
-                    boolean horizontal = random.nextBoolean();
-                    int colSpan = horizontal ? sizes[shipNum] : 1;
-                    int rowSpan = !horizontal ? sizes[shipNum] : 1;
-                    int rowStart = random.nextInt(h - rowSpan);
-                    int colStart = random.nextInt(w - colSpan);
-
-                    for (int i = rowStart; i < rowStart + rowSpan; i++) {
-                        for (int j = colStart; j < colStart + colSpan; j++) {
-                            if (shipsGrid[i][j] != -1) {
-                                continue arrangeShip;
-                            }
+                for (int i = rowStart; i < rowStart + rowSpan; i++) {
+                    for (int j = colStart; j < colStart + colSpan; j++) {
+                        if (shipsGrid[i][j] != -1) {
+                            continue arrangeShip;
                         }
                     }
-
-                    for (int i = rowStart; i < rowStart + rowSpan; i++) {
-                        for (int j = colStart; j < colStart + colSpan; j++) {
-                            shipsGrid[i][j] = shipNum;
-                        }
-                    }
-                    arranged++;
-                    break;
                 }
+
+                for (int i = rowStart; i < rowStart + rowSpan; i++) {
+                    for (int j = colStart; j < colStart + colSpan; j++) {
+                        shipsGrid[i][j] = shipNum;
+                    }
+                }
+                break;
             }
         }
     }
@@ -127,8 +122,8 @@ class BattleShip {
     void printShoots() {
         System.out.println();
         System.out.print("Ships damage: ");
-        for (int i = 0; i < damages.length; i++) {
-            System.out.print(damages[i] + "/" + sizes[i] + "    ");
+        for (int shipNum = 0; shipNum < damages.length; shipNum++) {
+            System.out.print(damages[shipNum] + "/" + sizes[shipNum] + "    ");
         }
         System.out.println();
         System.out.println("Total damage: " + totalDamage + "/" + totalSize);
