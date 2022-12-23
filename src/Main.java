@@ -9,27 +9,26 @@ class BattleShip {
     // Game config
     int w = 10, h = 10;
     int[] sizes = {5, 4, 3, 3, 2};  // index=shipNum
-    int maxShoots = 32;
+    int maxShots = 32;
 
 
     // Game state
-    int[][] shipsGrid = new int[h][w];  // -1=No-ship    or   shipNum
-    boolean[][] shootsGrid = new boolean[h][w];
-    int[] damages = new int[sizes.length];
-    int totalSize, totalDamage, totalShoots;
+    int[][] grid = new int[h][w];  // -1=No-ship    or   shipNum
+    boolean[][] shotsGrid = new boolean[h][w];
+    int[] hits = new int[sizes.length];
+    int totalSize, totalHits, totalShots;
     int row, col;
 
     void start() {
         init();
         arrangeShips();
         for (; ; ) {
-            printShipsGrid();
-            printShootsGrid();
-            printShoots();
-            if (totalSize == totalDamage) {
+            // printShipsGrid();
+            printGame();
+            if (totalSize == totalHits) {
                 System.out.println("\033[1;92m YOU WIN!!!!! \033[0m");
                 break;
-            } else if (totalShoots == maxShoots) {
+            } else if (totalShots == maxShots) {
                 System.out.println("\033[1;92m YOU LOOSE :( \033[0m");
                 break;
             }
@@ -41,7 +40,7 @@ class BattleShip {
     void init() {
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
-                shipsGrid[i][j] = -1;
+                grid[i][j] = -1;
             }
         }
 
@@ -60,7 +59,7 @@ class BattleShip {
 
                 for (int i = rowStart; i < rowStart + rowSpan; i++) {
                     for (int j = colStart; j < colStart + colSpan; j++) {
-                        if (shipsGrid[i][j] != -1) {
+                        if (grid[i][j] != -1) {
                             continue arrangeShip;
                         }
                     }
@@ -68,7 +67,7 @@ class BattleShip {
 
                 for (int i = rowStart; i < rowStart + rowSpan; i++) {
                     for (int j = colStart; j < colStart + colSpan; j++) {
-                        shipsGrid[i][j] = shipNum;
+                        grid[i][j] = shipNum;
                     }
                 }
                 break;
@@ -85,10 +84,10 @@ class BattleShip {
         for (int i = 0; i < h; i++) {
             System.out.print(Character.toString(i + 65) + " ");
             for (int j = 0; j < w; j++) {
-                if (shipsGrid[i][j] == -1) {
+                if (grid[i][j] == -1) {
                     System.out.print(" . ");
                 } else {
-                    System.out.print("\033[32m " + shipsGrid[i][j] + " \033[0m");
+                    System.out.print("\033[32m " + grid[i][j] + " \033[0m");
                 }
             }
             System.out.println();
@@ -96,7 +95,7 @@ class BattleShip {
         System.out.println();
     }
 
-    void printShootsGrid() {
+    void printGame() {
         System.out.print(" ");
         for (int i = 0; i < w; i++) {
             System.out.printf("%3d", i + 1);
@@ -105,11 +104,11 @@ class BattleShip {
         for (int i = 0; i < h; i++) {
             System.out.print(Character.toString(i + 65) + " ");
             for (int j = 0; j < w; j++) {
-                if (!shootsGrid[i][j]) {
+                if (!shotsGrid[i][j]) {
                     System.out.print(" · ");
-                } else if (shipsGrid[i][j] == -1) {
+                } else if (grid[i][j] == -1) {
                     System.out.print("\033[1;94m ~ \033[0m");
-                } else if (damages[shipsGrid[i][j]] == sizes[shipsGrid[i][j]]) {
+                } else if (hits[grid[i][j]] == sizes[grid[i][j]]) {
                     System.out.print("\033[1;91m # \033[0m");
                 } else {
                     System.out.print("\033[31m * \033[0m");
@@ -117,17 +116,15 @@ class BattleShip {
             }
             System.out.println();
         }
-    }
 
-    void printShoots() {
         System.out.println();
         System.out.print("Ships damage: ");
-        for (int shipNum = 0; shipNum < damages.length; shipNum++) {
-            System.out.print(damages[shipNum] + "/" + sizes[shipNum] + "    ");
+        for (int shipNum = 0; shipNum < hits.length; shipNum++) {
+            System.out.print(hits[shipNum] + "/" + sizes[shipNum] + "    ");
         }
         System.out.println();
-        System.out.println("Total damage: " + totalDamage + "/" + totalSize);
-        System.out.println("Total shoots: " + totalShoots + "/" + maxShoots);
+        System.out.println("Total damage: " + totalHits + "/" + totalSize);
+        System.out.println("Total shoots: " + totalShots + "/" + maxShots);
     }
 
     void takeMove() {
@@ -146,7 +143,7 @@ class BattleShip {
                 row--;
                 col--;
 
-                if (row >= 0 && row < h && col >= 0 && col < w && !shootsGrid[row][col]) {
+                if (row >= 0 && row < h && col >= 0 && col < w && !shotsGrid[row][col]) {
                     break;
                 }
             }
@@ -155,12 +152,12 @@ class BattleShip {
     }
 
     void shoot() {
-        totalShoots++;
-        shootsGrid[row][col] = true;
+        totalShots++;
+        shotsGrid[row][col] = true;
 
-        if (shipsGrid[row][col] != -1) {
-            damages[shipsGrid[row][col]]++;
-            totalDamage++;
+        if (grid[row][col] != -1) {
+            hits[grid[row][col]]++;
+            totalHits++;
         }
     }
 }
